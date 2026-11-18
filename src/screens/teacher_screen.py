@@ -105,7 +105,7 @@ def teacher_tab_take_attendance():
         st.warning('You havent created any subjects yet! Please create one to begin!')
         return
     
-    subject_options = {f"{s['name']} - {s['subject_code']}": s['subject_id'] for s in subjects}
+    subject_options = {f"{s['name']} - {s['sub_code']}": s['subject_id'] for s in subjects}
 
     col1, col2 = st.columns([3,1], vertical_alignment='bottom')
 
@@ -178,7 +178,7 @@ def teacher_tab_take_attendance():
                         })
 
                         attendance_to_log.append({
-                            'student_id': student['student_id'],
+                            'stusent_id': student['student_id'],
                             'subject_id': selected_subject_id,
                             'timestamp': current_timestamp,
                             'is_present': bool(is_present)
@@ -220,13 +220,13 @@ def teacher_tab_manage_subjects():
                 ("🕰️", "Classes", sub['total_classes']),
             ]
         def share_btn():
-            if st.button(f"Share Code: {sub['name']}", key=f"share_{sub['subject_code']}", icon=":material/share:"):
-                share_subject_dialog(sub['name'], sub['subject_code'])
+            if st.button(f"Share Code: {sub['name']}", key=f"share_{sub['sub_code']}", icon=":material/share:"):
+                share_subject_dialog(sub['name'], sub['sub_code'])
             st.space()
 
         subject_card(
             name = sub['name'],
-            code = sub['subject_code'],
+            code = sub['sub_code'],
             section = sub['section'],
             stats=stats,
             footer_callback=share_btn
@@ -254,7 +254,7 @@ def teacher_tab_attendance_records():
             "ts_group": ts.split(".")[0] if ts else None,
             "Time": datetime.fromisoformat(ts).strftime("%Y-%m-%d %I:%M %p") if ts else "N'A",
             "Subject": r['subjects']['name'],
-            "Subject Code":r['subjects']['subject_code'],
+            "Subject Code":r['subjects']['sub_code'],
             "is_present": bool(r.get('is_present', False))
         })
 
@@ -339,18 +339,24 @@ def teacher_screen_login():
 
 
 def register_teacher(teacher_username, teacher_name, teacher_pass, teacher_pass_confirm):
+
     if not teacher_username or not teacher_name or not teacher_pass:
-        return False, "All Fields are required!"
-    if check_teacher_exists(teacher_username):
-        return False, "Username already taken"
+        return False, "All fields are required!"
+
     if teacher_pass != teacher_pass_confirm:
-        return False, "Password doesn't match"
-    
+        return False, "Passwords do not match!"
+
     try:
+        if check_teacher_exists(teacher_username):
+            return False, "Username already taken"
+
         create_teacher(teacher_username, teacher_pass, teacher_name)
-        return True, "Sucessfully Created! Login Now"
+
+        return True, "Successfully created! Login now."
+
     except Exception as e:
-        return False, "Unexpected Error!"
+        print("TEACHER REGISTRATION ERROR:", repr(e))
+        return False, f"Registration failed: {str(e)}"
     
 
 def teacher_screen_register():
