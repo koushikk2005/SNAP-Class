@@ -14,14 +14,15 @@ from src.pipelines.face_pipeline import predict_attendance
 from src.components.dialog_attendance_results import attendance_result_dialog
 import numpy as np
 
-from datetime import datetime
-
 import pandas as pd
+
 
 from src.database.config import supabase
 
 
 from src.components.dialog_voice_attendance import voice_attendance_dialog
+from src.time_utils import current_attendance_timestamp, format_attendance_timestamp
+
 def teacher_screen():
 
     style_background_dashboard()
@@ -162,7 +163,7 @@ def teacher_tab_take_attendance():
 
                     results, attendance_to_log  = [], []
 
-                    current_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+                    current_timestamp = current_attendance_timestamp()
 
 
                     for node in enrolled_students:
@@ -252,7 +253,7 @@ def teacher_tab_attendance_records():
 
         data.append({
             "ts_group": ts.split(".")[0] if ts else None,
-            "Time": datetime.fromisoformat(ts).strftime("%Y-%m-%d %I:%M %p") if ts else "N'A",
+            "Time": format_attendance_timestamp(ts) if ts else "N'A",
             "Subject": r['subjects']['name'],
             "Subject Code":r['subjects']['sub_code'],
             "is_present": bool(r.get('is_present', False))
@@ -312,7 +313,7 @@ def teacher_screen_login():
     st.space()
 
 
-    teacher_username = st.text_input("Enter username", placeholder='ananyaroy')
+    teacher_username = st.text_input("Enter username", placeholder='koushik')
 
     teacher_pass = st.text_input("Enter password", type='password', placeholder="Enter password")
 

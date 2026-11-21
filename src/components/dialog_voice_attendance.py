@@ -8,7 +8,8 @@ import pandas as pd
 
 
 from src.components.dialog_attendance_results import show_attendance_result
-from datetime import datetime
+from src.time_utils import current_attendance_timestamp
+
 @st.dialog('Voice Attendance')
 def voice_attendance_dialog(selected_subject_id):
     st.write('Record audio of students saying I am present. Then AI will recognize the students')
@@ -41,7 +42,7 @@ def voice_attendance_dialog(selected_subject_id):
 
             results, attendance_to_log  = [], []
 
-            current_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+            current_timestamp = current_attendance_timestamp()
 
 
             for node in enrolled_students:
